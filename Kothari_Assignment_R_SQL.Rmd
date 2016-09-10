@@ -1,0 +1,49 @@
+---
+title: "Kothari_Assignment1"
+author: "Ravi Kothari"
+date: "September 10, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Assignment R and SQL
+
+Choose six recent popular movies. Ask at least five people that you know (friends, family, classmates,
+imaginary friends) to rate each of these movie that they have seen on a scale of 1 to 5. Take the results
+(observations) and store them in a SQL database. Load the information into an R dataframe.
+
+## Description
+
+For this assignment I created a database msda_607 with three tales.
+
+- Movie
+- rating
+- Person
+
+You can create the Database and tables with the SQL script on this link
+
+## Load Datasets
+```{r load data, eval=FALSE}
+getwd()
+setwd("C:/TEMP/")
+df <- read.csv("movies.csv", header = FALSE) 
+is.data.frame(df)
+head(df)
+names(df)
+str(df)
+names(df) <- c("title", "release_year", "genre", "length", "rating", "person_name", "age", "gender", "relation")
+attach(df)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

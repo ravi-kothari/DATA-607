@@ -109,3 +109,10 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2016-09-10 13:29:35
+
+
+select title, release_year, genre, length, rating, person_name, age, gender, relation from Movie, Rating, Person where Movie.movieID = Rating.movieID and Person.personID = Rating.personID 
+INTO OUTFILE 'C:/TEMP/movies.csv'
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n';

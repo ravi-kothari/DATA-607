@@ -23,8 +23,11 @@ For this assignment I created a database msda_607 with three tales.
 - rating
 - Person
 
-You can create the Database and tables with the SQL script on this link
+You can create the Database and tables with the SQL script on this
 
+[Link]https://github.com/ravi-kothari/DATA-607/blob/master/movies.sql
+
+I exported out the database in csv format using and loaded into a dataframe.
 ## Load Datasets
 ```{r load data, eval=FALSE}
 getwd()
@@ -38,12 +41,3 @@ names(df) <- c("title", "release_year", "genre", "length", "rating", "person_nam
 attach(df)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

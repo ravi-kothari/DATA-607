@@ -1,0 +1,110 @@
+---
+title: "Data607_HW3"
+author: "Ravi Kothari"
+date: "September 18, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 3 Copy the introductory example. The vector name stores the extracted names. 
+
+R> name [1] "Moe Szyslak" "Burns, C. Montgomery" "Rev. Timothy Lovejoy" [4] "Ned Flanders" "Simpson, Homer" "Dr. Julius Hibbert"
+
+(a) Use the tools of this chapter to rearrange the vector so that all elements conform to the standard first_name last_name.
+
+```{r load_dataset}
+library(stringr)
+raw.data <- "555-1239Moe Szyslak(636) 555-0113Burns, C. Montgomery555-6542Rev. Timothy Lovejoy555 8904Ned Flanders636-555-3226Simpson, Homer5553642Dr. Julius Hibbert"
+name <- unlist(str_extract_all(raw.data, "[[:alpha:]., ]{2,}"))
+name
+
+first_name <- unlist(str_extract_all(name, "[:punct:] [[:alpha:]]{2,}$|[[:alpha:]]{2,} "))
+first_name <- unlist(str_extract_all(first_name,"\\w+"))
+first_name
+
+last_name <- unlist(str_extract_all(name, "[^[:punct:]] [[:alpha:]]{2,}$|[[:alpha:]]{2,}, "))
+last_name <- unlist(str_extract_all(last_name,"[[:alpha:]]{2,}"))
+
+data.frame(first_name, last_name)
+```
+
+(B) Construct a logical vector indicating whether a character has a title (i.e., Rev. and Dr.).
+
+```{r 3B}
+str_detect(name, unlist(str_extract_all(name, "[[:alpha:]]{2,}\\.")))
+```
+
+## 4 Describe the types of strings that conform to the following regular expressions and construct an example that is matched by the regular expression.
+
+(a) [0-9]+\$
+
+```{r a}
+example1 <- c("abcdefh$", "12456$45", "ads$afsa", "1234$abcd34$")
+unlist(str_extract_all(example1,"[0-9]+\\$"))
+
+```
+String of numbers[0-9] followed by "$" sign. 
+
+(b) \\b[a-z]{1,4}\\b
+
+```{r b}
+example2 <- c("tiny", "adasgvaf123", "aafdafa$", "also", "two")
+unlist(str_extract_all(example2,"\\b[a-z]{1,4}\\b"))
+
+```
+
+the query above extracts [a-z] off of edges of the words of length 1 but not more than 4 characters. So the words should be of length 4 or less but consecutive.
+
+(c) .*?\.txt$
+
+```{r c}
+example3 <- c("tiny", "ravi..txt", "123.txt", "234txt", "345.txt")
+unlist(str_extract_all(example3,".*?\\.txt$"))
+
+```
+
+The above query will return anything which ends with .txt 
+
+(d) \\d{2}/\\d{2}/\\d{4}
+
+```{r d}
+example4 <- c("tiny", "123445", "133/45/12333", "044/333/1984", "34/")
+unlist(str_extract_all(example4,"\\d{2}/\\d{2}/\\d{4}"))
+
+```
+
+The above query is to extract any two digit just before a "/" then again exactly 2 digits followed by a "/" and then first four digits after the  second "/"" 
+
+
+(e) <(.+?)>.+?</\1>
+
+```{r e}
+example5 <- c("<html>Text</html>", "123445", "133/45/12333", "044/333/1984", "34/")
+unlist(str_extract_all(example5,"<(.+?)>.+?</\\1>"))
+
+```
+
+The above query extracts the opening and closing tags like html tags. The opening and closing should match followed including a "/" for closing tags.
+
+
+## 9 The following code hides a secret message. Crack it with R and regular expressions. Hint: Some of the characters are more revealing than others! The code snippet is also available in the materials at www.r-datacollection.com.
+
+
+clcopCow1zmstc0d87wnkig7OvdicpNuggvhryn92Gjuwczi8hqrfpRxs5Aj5dwpn0Tanwo
+Uwisdij7Lj8kpf03AT5Idr3coc0bt7yczjatOaootj55t3Nj3ne6c4Sfek.r1w1YwwojigO
+d6vrfUrbz2.2bkAnbhzgv4R9i05zEcrop.wAgnb.SqoU65fPa1otfb7wEm24k6t3sR9zqe5
+fy89n6Nd5t9kc4fE905gmc4Rgxo5nhDk!gr
+
+```{r 9}
+secret <- "clcopCow1zmstc0d87wnkig7OvdicpNuggvhryn92Gjuwczi8hqrfpRxs5Aj5dwpn0Tanwo
+Uwisdij7Lj8kpf03AT5Idr3coc0bt7yczjatOaootj55t3Nj3ne6c4Sfek.r1w1YwwojigO
+d6vrfUrbz2.2bkAnbhzgv4R9i05zEcrop.wAgnb.SqoU65fPa1otfb7wEm24k6t3sR9zqe5
+fy89n6Nd5t9kc4fE905gmc4Rgxo5nhDk!gr"
+
+message <- unlist(str_extract_all(secret, "[[:upper:][[:punct:]]]"))
+(str_replace_all(paste(message, collapse = ''), "[.]", " "))
+```
+```

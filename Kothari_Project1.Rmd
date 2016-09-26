@@ -1,0 +1,137 @@
+---
+title: "Kothari_project1"
+author: "Ravi Kothari"
+date: "September 25, 2016"
+output: html_document
+---
+## Setup
+
+The following R packages are required for this project:
+
+1. Downloader
+2. Stringr
+
+```{r setup}
+library(downloader)
+library(stringr)
+```
+
+## Project Description
+
+In this project, you're given a text file with chess tournament results where the information has some structure. Your job is to create an R Markdown file that generates a .CSV file (that could for example be imported into a SQL database) with the following information for all of the players:
+Player's Name, Player's State, Total Number of Points, Player's Pre-Rating, and Average Pre Chess Rating of Opponents For the first player, the information would be:
+
+Gary Hua, ON, 6.0, 1794, 1605
+
+1605 was calculated by using the pre-tournament opponents' ratings of 1436, 1563, 1600, 1610, 1649, 1663, 1716, and dividing by the total number of games played.
+
+The goal of this project is to generate a .CSV file (which could for example be imported into a SQL database) with the following information for all of the players contained in the chess tournament cross table:
+
+* Player's Name
+* Player's State
+* Total Number of Points
+* Player's Pre-Rating
+* Average Pre Chess Rating of Opponents
+
+## Importing the dataset from the text file
+
+Download the file, called `tournamentinfo.txt', from the GitHub URL. This file will be downloaded to your local working directory.
+
+https://raw.githubusercontent.com/ravi-kothari/DATA-607/master/tournamentinfo.txt?token=AQGrklbb_mgZp2MfY-1Ixw30fsRR2reTks5X8gcVwA%3D%3D
+
+```{r import_data, eval=TRUE}
+
+url <- "https://raw.githubusercontent.com/ravi-kothari/DATA-607/master/tournamentinfo.txt?token=AQGrklbb_mgZp2MfY-1Ixw30fsRR2reTks5X8gcVwA%3D%3D"
+
+download_file <- "tournamentinfo.txt" 
+
+# the file will be downloaded to the working directory
+downloader::download(url, download_file)
+
+getwd()
+```
+
+## Extraction of the columns using regular expressions
+
+```{r extract_columns, eval=TRUE}
+library(stringr)
+results <- readLines("tournamentinfo.txt")
+
+# extract player name from the text file using regular expression
+player_name <- unlist(str_extract_all(results, "\\w+[^USCF|a-z] ?\\w+ \\w+"))
+
+# extract player_state
+player_state <- unlist(str_extract_all(results, "(?:^|\\W)ON | MI | OH(?:$|\\W)"))
+
+# extract total number of points for the player.
+
+player_pts <- unlist(str_extract_all(results, "\\d\\.\\d"))
+
+# extract pre rating for the player
+# I divided the steps into couple of steps for this.
+
+pre_rating_step1 <-  unlist(str_extract_all(results, "(R:\\s*)(\\d+)"))
+pre_rating_step1[1]
+pre_rating <- unlist(str_extract_all(pre_rating_step1, "(\\d+)"))
+is.vector(pre_rating)
+pre_rating <- as.numeric(pre_rating) # converting strings to numeric
+pre_rating[1]
+
+
+# For avg rating I divided the extraction into three steps
+
+# Step 1: extract the full line of text that starts with "|" and a number.
+avg_calc_step1 <- unlist(str_extract_all(results, "\\|[0-9].*"))
+
+avg_calc_step1[16]
+
+
+# used str_replace to replace empty spaces with 00 in the data.
+avg_calc_step2 <- str_replace_all(avg_calc_step1, "\\s{1,2}\\|","00|")
+
+avg_calc_step2[16]
+
+# Step three is to only extract the number of opponent for each round.
+avg_calc_step3 <- (str_extract_all(avg_calc_step2, "\\s\\d{1,2}"))
+
+avg_calc_step3[16]
+
+# Calculation of the Average Pre Chess Rating of Opponents
+
+#converting the list into a matrix 
+matrix_calc <- matrix(unlist(avg_calc_step3), byrow=TRUE, nrow=length(avg_calc_step3) )
+dim(matrix_calc)
+new_matrix <- t(apply(matrix_calc, 1,as.numeric)) 
+dim(new_matrix)
+
+#replacing each element in the matrix with actual rating for opponents and adding NA if its 0
+for (i in 1:nrow(new_matrix)) 
+  {
+  for (j in 1:ncol(new_matrix))
+    {
+    if (new_matrix[i,j] == 0){
+      new_matrix[i,j] = NA
+    }
+    else{
+      new_matrix[i,j] <- pre_rating[new_matrix[i,j]]
+    }
+  }
+}
+# Finally calculating the mean of each row to get the average opponent ratings.
+avg_opponents <- c(rowMeans(new_matrix, na.rm = TRUE))
+
+# Putting everything together!
+df <- data.frame(player_name,player_state, player_pts,pre_rating,avg_opponents)
+colnames(df) <- c("Players Name","Players State", "Total Points", "Players Pre-Rating", "Opponents Ratings")
+
+# Exporting the result into a CSV file.
+write.csv(df, "Chess.csv", row.names=FALSE)
+```
+
+##Output
+```{r output, echo=TRUE}
+df
+```
+
+
+

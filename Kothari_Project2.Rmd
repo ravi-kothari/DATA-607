@@ -27,16 +27,16 @@ narrative descriptions of your data cleanup work, analysis, and conclusions.
 
 ## Setup
 
-To do the analysis, I first added the information in the figure above to a CSV file, which can be downloaded from :
-[link]  https://github.com/ravi-kothari/DATA-607/blob/master/Assignment6.csv
+To do the analysis, I first downloaded the data from the websites to csv files and loaded it into R, the data files can be downloaded from the link below and then save it your working directory:
+[link]  https://github.com/ravi-kothari/DATA-607/
 
 Also we will need the following package to do the analysis:
+
+
     
 * dplyr
 
 * tidyr
-
-* Downloader
 
 * ggplot2(optional)
 
@@ -51,7 +51,7 @@ library("Downloader")
 
 ### Step 1: Loading the datasets.
 
-We start by loading all the datasets for the analysis. I picked Walt Wells dataset for the walking dead ratings, then I took the dataset i suggested for English premiere league. I wanted to see how the spin off of the walking dead tv series called Fear the walking dead ratings are compared to original walking dead.
+We start by loading all the datasets for the analysis. I picked Walt Wells dataset for the walking dead ratings, then I took the dataset i suggested for English premiere league. I wanted to see how the spin off of the walking dead tv series called Fear the walking dead ratings are compared to original walking dead, so i picked that as my third dataset.
 
 ```{r load_dataset, eval=TRUE}
 getwd()

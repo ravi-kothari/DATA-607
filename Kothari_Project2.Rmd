@@ -1,0 +1,222 @@
+---
+title: "Project 2"
+author: "Ravi Kothari"
+date: "October 9, 2016"
+output: html_document
+---
+
+
+## Project Description
+
+Your task is to:
+(1) Choose any three of the "wide" datasets identified in the Week 6 Discussion items. (You may
+use your own dataset; please don't use my Sample Post dataset, since that was used in your
+Week 6 assignment!) For each of the three chosen datasets:
+??? Create a .CSV file (or optionally, a MySQL database!) that includes all of the information
+included in the dataset. You're encouraged to use a "wide" structure similar to how the
+information appears in the discussion item, so that you can practice tidying and
+transformations as described below.
+??? Read the information from your .CSV file into R, and use tidyr and dplyr as needed to
+tidy and transform your data. [Most of your grade will be based on this step!]
+??? Perform the analysis requested in the discussion item.
+??? Your code should be in an R Markdown file, posted to rpubs.com, and should include
+narrative descriptions of your data cleanup work, analysis, and conclusions.
+(2) Please include in your homework submission, for each of the three chosen datasets:
+??? The URL to the .Rmd file in your GitHub repository, and
+??? The URL for your rpubs.com web page.
+
+## Setup
+
+To do the analysis, I first added the information in the figure above to a CSV file, which can be downloaded from :
+[link]  https://github.com/ravi-kothari/DATA-607/blob/master/Assignment6.csv
+
+Also we will need the following package to do the analysis:
+    
+* dplyr
+
+* tidyr
+
+* Downloader
+
+* ggplot2(optional)
+
+
+```{r install_package, eval=FALSE}
+install.packages("tidyr")
+install.packages("dplyr")
+library("tidyr")
+library("dplyr")
+library("Downloader")
+```
+
+### Step 1: Loading the datasets.
+
+We start by loading all the datasets for the analysis. I picked Walt Wells dataset for the walking dead ratings, then I took the dataset i suggested for English premiere league. I wanted to see how the spin off of the walking dead tv series called Fear the walking dead ratings are compared to original walking dead.
+
+```{r load_dataset, eval=TRUE}
+getwd()
+
+# load dataset into a dataframe.
+
+df_soccer <- read.csv("~/MSDA/DATA 607/EPL.csv",header=TRUE,stringsAsFactors = FALSE)
+df_soccer
+
+df_wd <- read.csv("~/MSDA/DATA 607/Walking_Dead.csv",header=TRUE,stringsAsFactors = FALSE, na.strings = "-")
+df_wd
+
+df_fear_wd <- read.csv("~/MSDA/DATA 607/Fear_the_Walking_Dead.csv",header=TRUE,stringsAsFactors = FALSE, na.strings = " ")
+df_fear_wd
+
+```
+
+### Step 2a: Tidy and Transform of soccer data:
+
+Lets analyze the soccer dataset first. As we can see although the data is in wide format its clean as there is no duplicate values in the table. One thing we can do is to renmae some column names to be more descriptive. Also we would like to remove the extra columns not required for our analysis, We will use dplyr function select to perform this.
+
+```{r soccer_tidy_transform, eval=TRUE}
+  
+library("tidyr")
+library("dplyr")
+
+df_soccer <- tbl_df(df_soccer)#wide format
+glimpse(df_soccer)
+
+clean_soccer <- df_soccer %>% 
+                        select(Team:L,Pts,Wh:Lh,Wa:La) %>%
+                        mutate(Played_Home = Wh + Dh + Lh, Played_Away = P - Played_Home) %>%
+                        rename(Played=P,Won=W, Draw=D, Lost=L, Won_Home = Wh, Draw_Home=Dh, Lost_Home = Lh, Won_Away=Wa, Draw_Away=Da, Lost_Away=La) 
+
+
+```
+
+
+### Step: Data Analysis for soccer data
+
+We used dplyr functions to analyse the data and calculate home won percentage. Also we arranged the teams based on their current points and also home win percent to see the performance vs the home advantage.
+
+````{r soccer_analysis, eval=TRUE}
+
+# Home win percent
+
+(clean_soccer %>%
+            select(Team,Played,Pts,Won_Home,Played_Home,Played_Away) %>%
+            group_by(Team) %>%
+            summarise(home_win_p = (Won_Home/Played_Home)*100, Pts) %>%
+            mutate(rank = rank(desc(Pts))) %>%
+            arrange(rank))
+
+```
+  
+
+### Step: Tidy and Transform Walking dead data:
+
+Lets analyze the walking dead dataset now. For the analysis we took the dataset which is wide and dirty so we will use tidyr first and dplyr functions to clean and rename column names. We used gather to reshape the data into long form for further analysis.
+
+
+```{r walkingdead_tidy_transform, eval=TRUE}
+  
+library("tidyr")
+library("dplyr")
+
+df_wd <- tbl_df(df_wd)#wide format
+glimpse(df_wd)
+df_wd
+
+clean_wd <- df_wd %>% 
+                  select(Season,Episode  = starts_with("X")) %>%
+                  mutate_each(funs(round(.,1)), -Season)
+
+# The arguments to gather():
+# - data: Data object
+# - key: Name of new key column (made from names of data columns)
+# - value: Name of new value column
+# - ...: Names of source columns that contain values
+# - factor_key: Treat the new key column as a factor (instead of character vector)
+
+# The arguments to spread():
+# - data: Data object
+# - key: Name of column containing the new column names
+# - value: Name of column containing values
+
+wd_long <- gather(clean_wd, Episodes, Ratings, -Season)
+wd_wide <- spread(wd_long, Season, Ratings)
+
+clean_wd <- wd_wide %>%
+                    setNames(paste0('Season_', names(.))) %>%
+                    rename(Episodes = Season_Episodes) %>%
+                    arrange(Episodes)
+```
+
+
+### Step: Data Analysis for walking dead dataset
+
+For the analysis part we analyzed the walking dead rating over each season and how the ratings changed over the course of the seasons. To perform this analysis we calculated average ratings for each season and we can see that the populatity grew season over season but it dropped a little for the last season.
+
+
+````{r wd_analysis, eval=TRUE}
+
+library(ggplot2)
+  x1 <- wd_long %>%
+            group_by(Season) %>%
+            summarise(average_ratings = mean(Ratings, na.rm = TRUE)) %>%
+            arrange(average_ratings) %>%
+            mutate(rank = rank(desc(average_ratings))) %>%
+            arrange(rank)
+
+x1
+            
+```
+
+### Step: Cleaning up of the third dataset(spin off of Walking Dead)
+
+```{r fear_walkingdead_tidy_transform, eval=TRUE}
+  
+library("tidyr")
+library("dplyr")
+
+df_fear_wd <- tbl_df(df_fear_wd)#wide format
+glimpse(df_fear_wd)
+df_fear_wd
+
+clean_fear_wd <- df_fear_wd %>% 
+                  select(Season,Episode  = starts_with("X")) %>%
+                  mutate_each(funs(round(.,1)), -Season)
+
+
+fear_wd_long <- gather(clean_fear_wd, Episodes, Ratings, -Season)
+fear_wd_wide <- spread(fear_wd_long, Season, Ratings)
+
+clean_fear_wd <- fear_wd_wide %>%
+                    setNames(paste0('Season_', names(.))) %>%
+                    rename(Episodes = Season_Episodes) %>%
+                    arrange(Episodes)
+```
+
+### Step: Data analysis
+
+````{r fear_wd_analysis, eval=TRUE}
+
+
+ x2 <-   fear_wd_long %>%
+            group_by(Season) %>%
+            summarise(average_ratings = mean(Ratings, na.rm = TRUE)) %>%
+            arrange(average_ratings) %>%
+            mutate(rank = rank(desc(average_ratings))) %>%
+            arrange(rank)
+```
+
+
+### Comparison
+
+We will compare the ratings of original walking dead with fear the walking dead ratings, We can see that the ratings for the spin off series are not that great.
+
+```{r comparison_of_walkingdead}
+library(ggplot2)
+x1 
+x2
+qplot(Season, weight = average_ratings, data = x1, geom = "bar")
+qplot(Season, weight = average_ratings, data = x2, geom = "bar")
+
+
+```
+

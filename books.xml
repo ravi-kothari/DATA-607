@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<root>
+    <0>
+        <title>Harry Potter and the Deathly Hallows Author</title>
+        <author>J. K. Rowling</author>
+        <isbn>978-0545139700</isbn>
+    </0>
+    <1>
+        <title>Automate the Boring Stuff with Python: Practical Programming for Total Beginners R</title>
+        <author>Al Sweigart</author>
+        <isbn>978-1593275990</isbn>
+    </1>
+    <2>
+        <title>Automated Data Collection with R: A Practical Guide to Web Scraping and Text Mining</title>
+        <author>Simon Munzert; Christian Rubba; Peter Meissner; Dominic Nyhuis</author>
+        <isbn>978-1-118-83480-0</isbn>
+    </2>
+</root>

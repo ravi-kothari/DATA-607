@@ -1,0 +1,17 @@
+[
+    {
+        "title": "Harry Potter and the Deathly Hallows Author",
+        "author": "J. K. Rowling",
+        "isbn": "978-0545139700"
+    },
+    {
+        "title": "Automate the Boring Stuff with Python: Practical Programming for Total Beginners R",
+        "author": "Al Sweigart",
+        "isbn": "978-1593275990"
+    },
+    {
+        "title": "Automated Data Collection with R: A Practical Guide to Web Scraping and Text Mining",
+        "author": "Simon Munzert; Christian Rubba; Peter Meissner; Dominic Nyhuis",
+        "isbn": "978-1-118-83480-0"
+    }
+]

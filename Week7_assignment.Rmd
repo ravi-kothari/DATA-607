@@ -1,0 +1,80 @@
+---
+title: "Data607_Week7_HW"
+author: "Ravi Kothari"
+date: "October 13, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Assignment - Working with XML and JSON in R
+
+## Desciption
+
+Pick three of your favorite books on one of your favorite subjects. At least one of the books should have more
+than one author. For each book, include the title, authors, and two or three other attributes that you find
+interesting.
+Take the information that you've selected about these three books, and separately create three files which
+store the book's information in HTML (using an html table), XML, and JSON formats (e.g. "books.html",
+"books.xml", and "books.json"). To help you better understand the different file structures, I'd prefer that you
+create each of these files "by hand" unless you're already very comfortable with the file formats.
+Write R code, using your packages of choice, to load the information from each of the three sources into
+separate R data frames. Are the three data frames identical?
+
+## Load Files
+```{r load data, eval=FALSE}
+
+library(RCurl)
+
+URLhtml <- "https://raw.githubusercontent.com/ravi-kothari/DATA-607/master/books.html"
+URLxml <-  "https://raw.githubusercontent.com/ravi-kothari/DATA-607/master/books.xml"
+URLjson <-   "https://raw.githubusercontent.com/ravi-kothari/DATA-607/master/books.json"
+
+books_html = getURL(URLhtml)
+books_xml = getURL(URLxml)
+books_JSON = getURL(URLjson)
+
+```
+
+## HTML Data
+
+```{r HTML, eval=FALSE}
+
+library(XML)
+html_data = readHTMLTable(books_html)
+html_data
+str(html_data)
+
+```
+
+
+## XML Data
+
+```{r XML, eval=FALSE}
+
+library(XML)
+xml_data = xmlParse(books_xml)
+xml_data = xmlToDataFrame(xml_data, stringsAsFactors = FALSE)
+xml_data
+str(xml_data)
+```
+
+
+## JSON Data
+
+```{r JSON, eval=FALSE}
+
+library(jsonlite)
+json_data = fromJSON(books_JSON)
+json_data
+str(json_data)
+
+```
+
+## Comparison
+
+If we use readHTMLTable function of XML package then the HTML data is loaded in the form of list and we will have to add the colnames as well. We can use rvest package's function html_table which will load as data frame. Json and XMl were loaded as data frame. The structure might be different for diff data frames but we can use various techniques and functions to make them identical with few transformations.
+
+

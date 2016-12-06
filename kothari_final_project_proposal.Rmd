@@ -1,0 +1,25 @@
+---
+title: "Final_project_proposal"
+author: "Ravi Kothari"
+date: "December 6, 2016"
+output: html_document
+---
+
+
+#Introduction:
+
+Since I am a huge craft beer fan, and always like to try new breweries. I thought why not use what I have learned this semester in Data 607 to extract breweries in northern california area mainly Sacramento area and then find the best brewery based on its beer ratings.
+
+
+#Objectives:
+
+For this In final project, I want to create a markdown file that can extract the information from the website about the brewries local in Sacramento region. Some of the answers I am trying to find through this analysis are:
+
+1. Which is the most popular brewrery in Sacramento region.
+2. Are there any new brewries opening up and to keep track of it.
+3. Which is the most popular local craft beer based on the ratings.
+
+
+#Data Resources:
+
+The data resource will be the beeradvocate.com, I also downloaded the open dataset available but its only till 2011 so won't be current so most likely we will use web scraping to get the current data.
